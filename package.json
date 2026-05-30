@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/ensure-pwas.mjs && next dev",
+    "dev:next": "next dev",
+    "build": "npm run build:pwas && next build",
     "build:pwas": "node scripts/build-pwas.mjs",
-    "build:vercel": "npm run build:pwas && next build",
+    "build:vercel": "npm run build",
     "start": "next start",
     "lint": "next lint"
   },

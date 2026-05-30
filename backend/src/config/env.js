@@ -13,7 +13,7 @@ function required(name, fallback) {
 function parseCorsOrigins() {
   const origins = new Set();
 
-  const clientUrl = process.env.CLIENT_URL ?? "http://localhost:3000";
+  const clientUrl = process.env.CLIENT_URL ?? "http://localhost:3000,http://localhost:3001";
   clientUrl.split(",").forEach((u) => origins.add(u.trim()));
 
   if (process.env.VERCEL_URL) {
@@ -40,7 +40,7 @@ function parseCorsOrigins() {
 export const env = {
   nodeEnv: process.env.NODE_ENV ?? "development",
   port: parseInt(process.env.PORT ?? "4000", 10),
-  clientUrl: process.env.CLIENT_URL ?? "http://localhost:3000",
+  clientUrl: process.env.CLIENT_URL ?? "http://localhost:3000,http://localhost:3001",
   corsOrigins: parseCorsOrigins(),
   mongodbUri: required("MONGODB_URI", "mongodb://localhost:27017/rapidaid"),
   jwtSecret: required("JWT_SECRET", "dev-secret-change-in-production"),

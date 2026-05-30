@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { io, type Socket } from "socket.io-client";
 import type { TrackingUpdate } from "../types";
+import { getAuthToken, shouldUseLiveSocket } from "../lib/demo";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL as string | undefined;
 
@@ -53,14 +54,18 @@ export function useEmergencySocket(
     onUpdateRef.current(update);
   }, []);
 
-  const useSimulation = !SOCKET_URL;
+  const useSimulation = !SOCKET_URL || !shouldUseLiveSocket();
 
   useSimulatedTracking(useSimulation && active, stableOnUpdate);
 
   useEffect(() => {
     if (!active || useSimulation) return;
 
+    const token = getAuthToken();
+    if (!token) return;
+
     const socket = io(SOCKET_URL!, {
+      auth: { token },
       transports: ["websocket"],
       autoConnect: true,
     });
@@ -70,7 +75,9 @@ export function useEmergencySocket(
       stableOnUpdate(data);
     });
 
-    socket.emit("emergency:subscribe");
+    socket.on("emergency:status_update", () => {
+      // refresh handled by tracking updates
+    });
 
     return () => {
       socket.disconnect();

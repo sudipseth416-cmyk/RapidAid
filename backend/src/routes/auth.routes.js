@@ -12,6 +12,7 @@ import {
 } from "../services/email.service.js";
 import { authenticate } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
+import { isStubMode, stubFindUser } from "../config/stub-db.js";
 
 const router = Router();
 
@@ -20,7 +21,7 @@ function authResponse(user, extras = {}) {
   return {
     token,
     user: {
-      id: user._id,
+      id: user._id.toString(),
       role: user.role,
       profile: user.profile,
       medicalId: user.medicalId,
@@ -169,7 +170,11 @@ router.post(
       const user = await User.create({
         role: "hospital",
         passwordHash,
-        profile: { ...profile, email: email.toLowerCase() },
+        profile: {
+          ...profile,
+          name: profile.name || profile.adminName || profile.hospitalName,
+          email: email.toLowerCase(),
+        },
         isEmailVerified: false,
         isApproved: false,
         isVerified: false,
@@ -273,9 +278,34 @@ router.post(
   async (req, res, next) => {
     try {
       const { identifier, password, role } = req.body;
+      const id = identifier.trim();
+
+      if (isStubMode()) {
+        const user = stubFindUser({ identifier: id, role: role || undefined });
+        if (!user) return res.status(401).json({ error: "Invalid credentials" });
+        const match = await bcrypt.compare(password, user.passwordHash);
+        if (!match) return res.status(401).json({ error: "Invalid credentials" });
+        return res.json(authResponse(user));
+      }
+
+      const idLower = id.toLowerCase();
+      const phoneNorm = id.replace(/\s/g, "");
       const query = role
-        ? { role, $or: [{ "profile.email": identifier }, { "profile.phone": identifier }] }
-        : { $or: [{ "profile.email": identifier }, { "profile.phone": identifier }] };
+        ? {
+            role,
+            $or: [
+              { "profile.email": idLower },
+              { "profile.phone": phoneNorm },
+              { "profile.phone": id },
+            ],
+          }
+        : {
+            $or: [
+              { "profile.email": idLower },
+              { "profile.phone": phoneNorm },
+              { "profile.phone": id },
+            ],
+          };
 
       const user = await User.findOne(query);
       if (!user?.passwordHash) {

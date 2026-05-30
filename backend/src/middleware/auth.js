@@ -1,5 +1,6 @@
 import { verifyToken } from "../utils/jwt.js";
 import { User } from "../models/User.js";
+import { isStubMode, stubFindById } from "../config/stub-db.js";
 
 export async function authenticate(req, res, next) {
   try {
@@ -9,6 +10,16 @@ export async function authenticate(req, res, next) {
     }
     const token = header.slice(7);
     const decoded = verifyToken(token);
+
+    if (isStubMode()) {
+      const user = stubFindById(decoded.userId);
+      if (!user) return res.status(401).json({ error: "User not found" });
+      req.user = user;
+      req.userId = user._id;
+      req.userRole = user.role;
+      return next();
+    }
+
     const user = await User.findById(decoded.userId).select("-passwordHash");
     if (!user) {
       return res.status(401).json({ error: "User not found" });

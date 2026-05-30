@@ -2,15 +2,28 @@
 
 import { Button } from "@/components/ui/button";
 
+const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
 export function GoogleOAuthButton() {
+  if (!CLIENT_ID) {
+    return (
+      <Button type="button" variant="outline" className="w-full gap-3 h-11" disabled>
+        <svg className="h-5 w-5 opacity-40" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="#ccc" />
+        </svg>
+        Google sign-in (set NEXT_PUBLIC_GOOGLE_CLIENT_ID)
+      </Button>
+    );
+  }
+
   return (
     <Button
       type="button"
       variant="outline"
       className="w-full gap-3 h-11"
       onClick={() => {
-        // OAuth integration placeholder
-        alert("Google OAuth will be connected to your backend.");
+        const redirect = `${window.location.origin}/auth/signin`;
+        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(redirect)}&response_type=token&scope=openid%20email%20profile`;
       }}
     >
       <svg className="h-5 w-5" viewBox="0 0 24 24">

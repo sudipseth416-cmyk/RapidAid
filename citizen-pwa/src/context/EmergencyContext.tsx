@@ -13,6 +13,7 @@ import {
   loadEmergencyOffline,
   saveEmergencyOffline,
 } from "../lib/offline-storage";
+import { isDemoMode, initDemoModeFromUrl } from "../lib/demo";
 
 const DEMO_EMERGENCY: ActiveEmergency = {
   caseNumber: "RA-DEMO01",
@@ -35,15 +36,6 @@ interface EmergencyContextValue {
 }
 
 const EmergencyContext = createContext<EmergencyContextValue | null>(null);
-
-function isDemoMode() {
-  if (typeof window === "undefined") return false;
-  const params = new URLSearchParams(window.location.search);
-  return (
-    params.get("demo") === "1" ||
-    localStorage.getItem("rapidaid-demo-mode") === "true"
-  );
-}
 
 export function EmergencyProvider({ children }: { children: ReactNode }) {
   const offline = loadEmergencyOffline();
@@ -68,7 +60,8 @@ export function EmergencyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (isDemoMode() && !emergency) {
+    initDemoModeFromUrl();
+    if (isDemoMode()) {
       setEmergency(DEMO_EMERGENCY);
       setActiveTab("track");
       setTracking({ etaMinutes: 4, ambulanceProgress: 35, aiStep: 1 });

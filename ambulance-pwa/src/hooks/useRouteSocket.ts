@@ -3,6 +3,7 @@ import { io, type Socket } from "socket.io-client";
 import type { RouteUpdate, LatLng } from "../types";
 import { ROUTES } from "../types";
 import { interpolateRoute } from "../lib/api";
+import { getAuthToken, shouldUseLiveSocket } from "../lib/demo";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL as string | undefined;
 
@@ -59,7 +60,7 @@ export function useRouteSocket(
 
   const start = ROUTES.ambulanceStart;
   const destination = phase === "enroute-patient" ? ROUTES.patient : ROUTES.hospital;
-  const useSimulation = !SOCKET_URL;
+  const useSimulation = !SOCKET_URL || !shouldUseLiveSocket();
 
   useSimulatedRoute({
     active: useSimulation && active,
@@ -71,11 +72,27 @@ export function useRouteSocket(
   useEffect(() => {
     if (!active || useSimulation) return;
 
-    const socket = io(SOCKET_URL!, { transports: ["websocket"] });
+    const token = getAuthToken();
+    if (!token) return;
+
+    const socket = io(SOCKET_URL!, {
+      auth: { token },
+      transports: ["websocket"],
+    });
     socketRef.current = socket;
 
-    socket.on("route:update", (data: RouteUpdate) => stableOnUpdate(data));
-    socket.emit("dispatch:subscribe", { phase });
+    socket.on("tracking:update", (data: { coordinates?: [number, number]; etaMinutes?: number }) => {
+      if (!data.coordinates) return;
+      stableOnUpdate({
+        etaSeconds: (data.etaMinutes ?? 0) * 60,
+        distanceRemainingKm: 0,
+        routeProgress: 0,
+        ambulancePosition: { lat: data.coordinates[1], lng: data.coordinates[0] },
+      });
+    });
+    socket.on("dispatch:incoming", () => {
+      // handled by DispatchContext simulation / UI
+    });
 
     return () => {
       socket.disconnect();

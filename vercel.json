@@ -6,8 +6,10 @@
   "rewrites": [
     { "source": "/citizen", "destination": "/citizen/index.html" },
     { "source": "/citizen/", "destination": "/citizen/index.html" },
+    { "source": "/citizen/:path((?!assets|sw\\.js|registerSW\\.js|manifest\\.webmanifest|favicon\\.svg|icons\\.svg|pwa-.*|workbox-.*).*)", "destination": "/citizen/index.html" },
     { "source": "/ambulance", "destination": "/ambulance/index.html" },
-    { "source": "/ambulance/", "destination": "/ambulance/index.html" }
+    { "source": "/ambulance/", "destination": "/ambulance/index.html" },
+    { "source": "/ambulance/:path((?!assets|sw\\.js|registerSW\\.js|manifest\\.webmanifest|favicon\\.svg|icons\\.svg|pwa-.*|workbox-.*).*)", "destination": "/ambulance/index.html" }
   ],
   "headers": [
     {

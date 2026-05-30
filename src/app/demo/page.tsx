@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { enableDemoMode } from "@/lib/demo/is-demo";
+import { appUrl } from "@/lib/auth/session";
 import {
   DEMO_ACTIVE_EMERGENCY,
   DEMO_AMBULANCES,
@@ -70,14 +71,14 @@ export default function DemoPage() {
             {
               title: "Citizen App",
               desc: "SOS, live tracking, Medical ID (PWA)",
-              href: "/citizen?demo=1",
+              href: appUrl("/citizen?demo=1"),
               icon: Siren,
               color: "bg-primary/10 text-primary",
             },
             {
               title: "Ambulance App",
               desc: "Dispatch, navigation, patient pickup (PWA)",
-              href: "/ambulance?demo=1",
+              href: appUrl("/ambulance?demo=1"),
               icon: Truck,
               color: "bg-amber-100 text-amber-800",
             },

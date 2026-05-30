@@ -16,6 +16,7 @@ import type {
 import { ROUTES } from "../types";
 import { MOCK_DISPATCH } from "../lib/api";
 import { useRouteSocket } from "../hooks/useRouteSocket";
+import { isDemoMode, initDemoModeFromUrl } from "../lib/demo";
 
 interface DispatchContextValue {
   phase: DispatchPhase;
@@ -78,14 +79,15 @@ export function DispatchProvider({ children }: { children: ReactNode }) {
     handleRouteUpdate
   );
 
+  useEffect(() => {
+    initDemoModeFromUrl();
+  }, []);
+
   // Simulate incoming dispatch when on duty in standby (faster in demo)
   useEffect(() => {
     if (!onDuty || phase !== "standby" || incomingDispatch) return;
 
-    const demo =
-      typeof window !== "undefined" &&
-      (new URLSearchParams(window.location.search).get("demo") === "1" ||
-        localStorage.getItem("rapidaid-demo-mode") === "true");
+    const demo = isDemoMode();
 
     const delay = demo ? 1500 : 6000;
     const timer = setTimeout(() => {

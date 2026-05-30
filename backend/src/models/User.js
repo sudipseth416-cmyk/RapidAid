@@ -20,8 +20,8 @@ const medicalIdSchema = new mongoose.Schema(
 const profileSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    phone: { type: String, sparse: true },
-    email: { type: String, sparse: true },
+    phone: { type: String },
+    email: { type: String },
     city: { type: String },
     bloodGroup: { type: String },
     // Ambulance-specific

@@ -10,23 +10,7 @@ import { IncomingCasesList } from "@/components/dashboard/overview/incoming-case
 import { ResourceAvailability } from "@/components/dashboard/overview/resource-availability";
 import { CaseTimeline } from "@/components/dashboard/case-timeline";
 import { PatientMedicalCard } from "@/components/dashboard/patient-medical-card";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
-const responseTrend = [
-  { hour: "06:00", min: 8.2 },
-  { hour: "09:00", min: 7.1 },
-  { hour: "12:00", min: 6.8 },
-  { hour: "15:00", min: 6.2 },
-  { hour: "18:00", min: 5.9 },
-];
+import { ResponseTrendChart } from "@/components/dashboard/overview/response-trend-chart";
 
 export function OverviewPage() {
   const { data: metrics } = useQuery({
@@ -126,23 +110,7 @@ export function OverviewPage() {
               <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Response Time Trend (24h)
               </p>
-              <div className="h-40 min-h-[160px] w-full min-w-0">
-                <ResponsiveContainer width="100%" height="100%" minHeight={160}>
-                  <LineChart data={responseTrend}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-                    <XAxis dataKey="hour" tick={{ fontSize: 10 }} />
-                    <YAxis tick={{ fontSize: 10 }} unit="m" />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="min"
-                      stroke="#E24B4A"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              <ResponseTrendChart />
             </div>
           </div>
         </div>
