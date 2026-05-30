@@ -1,0 +1,64 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Syne:wght@600;700;800&display=swap");
+@import "leaflet/dist/leaflet.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-dark text-white antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply m-0 overflow-x-hidden;
+    overscroll-behavior: none;
+  }
+  #root {
+    @apply min-h-dvh;
+  }
+}
+
+@layer components {
+  .btn-touch {
+    @apply flex min-h-touch items-center justify-center rounded-xl text-base font-semibold active:scale-[0.98] transition-transform;
+  }
+  .btn-primary {
+    @apply btn-touch bg-primary text-white;
+  }
+  .btn-amber {
+    @apply btn-touch bg-amber-light text-dark;
+  }
+  .btn-outline {
+    @apply btn-touch border-2 border-white/20 bg-surface text-white;
+  }
+  .thumb-zone {
+    @apply sticky bottom-0 z-20 border-t border-white/10 bg-dark/95 px-4 pb-4 pt-3 backdrop-blur-lg safe-bottom;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .safe-top {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+  }
+}
+
+.leaflet-container {
+  background: #1a1a1a !important;
+  font-family: inherit;
+}
+
+.leaflet-control-attribution {
+  font-size: 8px !important;
+  opacity: 0.5;
+}
+
+.ambulance-marker,
+.patient-marker,
+.hospital-marker {
+  background: none !important;
+  border: none !important;
+}

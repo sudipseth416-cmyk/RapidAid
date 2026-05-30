@@ -1,0 +1,26 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "npm run build:vercel",
+  "installCommand": "npm install && cd citizen-pwa && npm install && cd ../ambulance-pwa && npm install",
+  "rewrites": [
+    { "source": "/citizen", "destination": "/citizen/index.html" },
+    { "source": "/citizen/", "destination": "/citizen/index.html" },
+    { "source": "/ambulance", "destination": "/ambulance/index.html" },
+    { "source": "/ambulance/", "destination": "/ambulance/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/citizen/(.*)",
+      "headers": [
+        { "key": "Service-Worker-Allowed", "value": "/citizen/" }
+      ]
+    },
+    {
+      "source": "/ambulance/(.*)",
+      "headers": [
+        { "key": "Service-Worker-Allowed", "value": "/ambulance/" }
+      ]
+    }
+  ]
+}
